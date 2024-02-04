@@ -44,6 +44,41 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
+-- Table `littlelemondb`.`menuitems`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`menuitems` (
+  `MenuItemsID` INT NOT NULL,
+  `CourseName` VARCHAR(45) NOT NULL,
+  `StarterName` VARCHAR(45) NOT NULL,
+  `DesertName` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`MenuItemsID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `littlelemondb`.`menu`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `littlelemondb`.`menu` (
+  `menu_id` INT NOT NULL,
+  `item_name` VARCHAR(255) NOT NULL,
+  `category` VARCHAR(50) NOT NULL,
+  `price` DECIMAL(10,2) NOT NULL,
+  `MenuItemsID` INT NOT NULL,
+  INDEX `menuitems_fk_idx` (`MenuItemsID` ASC) VISIBLE,
+  PRIMARY KEY (`menu_id`),
+  CONSTRAINT `menuitems_fk`
+    FOREIGN KEY (`MenuItemsID`)
+    REFERENCES `littlelemondb`.`menuitems` (`MenuItemsID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
 -- Table `littlelemondb`.`order_delivery_status`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `littlelemondb`.`order_delivery_status` (
@@ -89,9 +124,15 @@ CREATE TABLE IF NOT EXISTS `littlelemondb`.`orders` (
   INDEX `orderdel_fk_idx` (`orderdel_id` ASC) VISIBLE,
   INDEX `staff_fk_idx` (`staff_id` ASC) VISIBLE,
   INDEX `customer_fk_idx` (`customer_id` ASC) VISIBLE,
+  INDEX `menu_fk_idx` (`menu_id` ASC) VISIBLE,
   CONSTRAINT `bookings_fk`
     FOREIGN KEY (`booking_id`)
     REFERENCES `littlelemondb`.`bookings` (`booking_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `customer_fk`
+    FOREIGN KEY (`customer_id`)
+    REFERENCES `littlelemondb`.`customer_details` (`customer_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `orderdel_fk`
@@ -104,47 +145,9 @@ CREATE TABLE IF NOT EXISTS `littlelemondb`.`orders` (
     REFERENCES `littlelemondb`.`staff_information` (`staff_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `customer_fk`
-    FOREIGN KEY (`customer_id`)
-    REFERENCES `littlelemondb`.`customer_details` (`customer_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
--- Table `littlelemondb`.`MenuItems`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `littlelemondb`.`MenuItems` (
-  `MenuItemsID` INT NOT NULL,
-  `CourseName` VARCHAR(45) NOT NULL,
-  `StarterName` VARCHAR(45) NOT NULL,
-  `DesertName` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`MenuItemsID`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `littlelemondb`.`menu`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `littlelemondb`.`menu` (
-  `menu_id` INT NOT NULL,
-  `item_name` VARCHAR(255) NOT NULL,
-  `category` VARCHAR(50) NOT NULL,
-  `price` DECIMAL(10,2) NOT NULL,
-  `MenuItemsID` INT NOT NULL,
-  PRIMARY KEY (`menu_id`),
-  INDEX `menuitems_fk_idx` (`MenuItemsID` ASC) VISIBLE,
   CONSTRAINT `menu_fk`
     FOREIGN KEY (`menu_id`)
-    REFERENCES `littlelemondb`.`orders` (`order_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `menuitems_fk`
-    FOREIGN KEY (`MenuItemsID`)
-    REFERENCES `littlelemondb`.`MenuItems` (`MenuItemsID`)
+    REFERENCES `littlelemondb`.`menu` (`menu_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
