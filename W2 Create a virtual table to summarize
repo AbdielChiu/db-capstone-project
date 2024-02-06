@@ -1,0 +1,56 @@
+-- -----------------------------------------------------
+-- TASK 1
+-- -----------------------------------------------------
+
+CREATE VIEW OrdersView AS
+SELECT order_id, quantity, total_cost
+FROM orders
+WHERE quantity > 2;
+
+-- Query OrdersView
+SELECT * FROM OrdersView;
+
+-- -----------------------------------------------------
+-- TASK 2 (Modified for total cost > 50 because of my data)
+-- -----------------------------------------------------
+
+SELECT 
+    c.customer_id,
+    c.customer_name,
+    o.order_id,
+    o.total_cost AS cost,
+    m.item_name AS menu_name,
+    mi.CourseName,
+    mi.StarterName
+FROM 
+    customer_details c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+JOIN 
+    menu m ON o.menu_id = m.menu_id
+JOIN 
+    menuitems mi ON m.MenuItemsID = mi.MenuItemsID
+WHERE 
+    o.total_cost > 50
+ORDER BY 
+    o.total_cost;
+
+-- -----------------------------------------------------
+-- TASK 3 (Modified for item qty > 1 because of my data)
+-- -----------------------------------------------------
+
+SELECT 
+    item_name AS menu_item
+FROM 
+    menu
+WHERE 
+    menu_id = ANY (
+        SELECT 
+            menu_id
+        FROM 
+            orders
+        GROUP BY 
+            menu_id
+        HAVING 
+            COUNT(*) > 1
+    );
