@@ -1,0 +1,63 @@
+-- -----------------------------------------------------
+-- TASK 1
+-- -----------------------------------------------------
+
+DELIMITER //
+
+CREATE PROCEDURE GetMaxQuantity()
+BEGIN
+    DECLARE max_quantity INT;
+
+    -- Selecting the maximum ordered quantity from the Orders table
+    SELECT MAX(quantity) INTO max_quantity FROM orders;
+
+    -- Displaying the maximum ordered quantity
+    SELECT max_quantity AS "Max Quantity in Order";
+END //
+
+DELIMITER ;
+
+-- Call the procedure
+CALL GetMaxQuantity();
+
+-- check if this coincides with: SELECT * FROM Orders ORDER BY quantity DESC;
+
+-- -----------------------------------------------------
+-- TASK 2
+-- -----------------------------------------------------
+-- Create the prepared statement
+PREPARE GetOrderDetail FROM 
+    'SELECT order_id, quantity, total_cost
+     FROM orders
+     WHERE customer_id = ?';
+
+-- Create a variable and assign it a value of 1
+SET @id = 1;
+EXECUTE GetOrderDetail USING @id;
+
+-- -----------------------------------------------------
+-- TASK 3
+-- -----------------------------------------------------
+
+DELIMITER //
+
+CREATE PROCEDURE CancelOrder (IN orderId INT)
+BEGIN
+    DECLARE row_count INT;
+
+    -- Check if the order exists
+    SELECT COUNT(*) INTO row_count FROM orders WHERE order_id = orderId;
+
+    IF row_count > 0 THEN
+        -- Delete the order
+        DELETE FROM orders WHERE order_id = orderId;
+        SELECT CONCAT('Order ', orderId, ' has been canceled.') AS Message;
+    ELSE
+        SELECT 'Order not found. No action taken.' AS Message;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- Call the procedure
+CALL CancelOrder(5);
