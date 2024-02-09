@@ -1,0 +1,84 @@
+-- -----------------------------------------------------
+-- TASK 1 - create a new procedure called AddBooking to add a new table booking record
+-- -----------------------------------------------------
+
+DELIMITER //
+
+CREATE PROCEDURE AddBooking (
+    IN bookingId INT,
+    IN customerId INT,
+    IN bookingDate DATE,
+    IN tableNumber INT
+)
+BEGIN
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Insert the new booking record
+    INSERT INTO bookings (booking_id, customer_id, date, table_number)
+    VALUES (bookingId, customerId, bookingDate, tableNumber);
+
+    -- Commit the transaction
+    COMMIT;
+END //
+
+DELIMITER ;
+
+-- verify with the following call
+CALL AddBooking(16, 3, "2024-12-30", 4);
+
+-- -----------------------------------------------------
+-- TASK 2 - create a new procedure called UpdateBooking to update existing bookings
+-- -----------------------------------------------------
+
+DELIMITER //
+
+CREATE PROCEDURE UpdateBooking (
+    IN bookingId INT,
+    IN bookingDate DATE
+)
+BEGIN
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Update the booking record
+    UPDATE bookings
+    SET date = bookingDate
+    WHERE booking_id = bookingId;
+
+    -- Commit the transaction
+    COMMIT;
+END //
+
+DELIMITER ;
+
+-- verify with the following call
+CALL UpdateBooking(9, "2024-12-17");
+
+-- -----------------------------------------------------
+-- TASK 3 - create a new procedure called CancelBooking that they can use to cancel or remove a booking
+-- -----------------------------------------------------
+
+DELIMITER //
+
+CREATE PROCEDURE CancelBooking (
+    IN bookingId INT
+)
+BEGIN
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Delete the booking record
+    DELETE FROM bookings
+    WHERE booking_id = bookingId;
+
+    -- Commit the transaction
+    COMMIT;
+
+    SELECT CONCAT('Booking ', bookingId, ' CANCELLED') AS Status;
+END //
+
+DELIMITER ;
+
+-- verify with the following call
+call CancelBooking(9);
